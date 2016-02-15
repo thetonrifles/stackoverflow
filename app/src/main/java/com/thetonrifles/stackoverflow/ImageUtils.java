@@ -1,16 +1,15 @@
 package com.thetonrifles.stackoverflow;
 
-import android.graphics.Bitmap;
-import android.widget.ImageView;
+import android.text.TextUtils;
+
+import com.android.volley.toolbox.NetworkImageView;
 
 public class ImageUtils {
 
-    public static void setPic(ImageView view, String path) {
-
-    }
-
-    public static void setPic(ImageView view, Bitmap bmp) {
-        view.setImageBitmap(bmp);
+    public static void setPic(NetworkImageView view, String url) {
+        if (!TextUtils.isEmpty(url)) {
+            view.setImageUrl(url, VolleyHandler.getInstance(view.getContext()).getImageLoader());
+        }
     }
 
 }

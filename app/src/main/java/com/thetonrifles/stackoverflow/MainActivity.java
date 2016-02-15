@@ -18,7 +18,7 @@ public class MainActivity extends AppCompatActivity {
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.lst_items);
 
         List<ListItem> items = new ArrayList<>();
-        items.add(new ListItem("Francesco", null));
+        items.add(new ListItem("Francesco", getUrl()));
         items.add(new ListItem("Daniele", null));
         items.add(new ListItem("Kevin", null));
         items.add(new ListItem("Radja", null));
@@ -35,6 +35,11 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         Adapter adapter = new Adapter(this, items);
         recyclerView.setAdapter(adapter);
+    }
+
+    private String getUrl() {
+        return "http://gazzettaworld.gazzetta.it/wp-content/uploads/2015/08/Totti-Roma.jpg";
+        //return "http://media.caranddriver.com/images/media/51/2016-10best-cars-lead-ph‌​oto-664005-s-original.jpg";
     }
 
 }
