@@ -9,6 +9,8 @@ public class ImageUtils {
     public static void setPic(NetworkImageView view, String url) {
         if (!TextUtils.isEmpty(url)) {
             view.setImageUrl(url, VolleyHandler.getInstance(view.getContext()).getImageLoader());
+        } else {
+            view.setImageUrl("", VolleyHandler.getInstance(view.getContext()).getImageLoader());
         }
     }
 
