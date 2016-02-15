@@ -1,5 +1,7 @@
 package com.thetonrifles.stackoverflow;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -8,7 +10,14 @@ import android.support.v7.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+
+public class MainActivity extends AppCompatActivity implements Adapter.Callback {
+
+    private static final int PICK_IMAGE_CODE = 1000;
+
+    private Adapter mAdapter;
+    private ListItem mCurrentItem;
+    private int mCurrentPosition;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,13 +42,33 @@ public class MainActivity extends AppCompatActivity {
         items.add(new ListItem("Seydou", null));
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        Adapter adapter = new Adapter(this, items);
-        recyclerView.setAdapter(adapter);
+        mAdapter = new Adapter(this, items, this);
+        recyclerView.setAdapter(mAdapter);
     }
 
     private String getUrl() {
         return "http://gazzettaworld.gazzetta.it/wp-content/uploads/2015/08/Totti-Roma.jpg";
         //return "http://media.caranddriver.com/images/media/51/2016-10best-cars-lead-ph‌​oto-664005-s-original.jpg";
+    }
+
+    @Override
+    public void onButtonClick(int position, ListItem item) {
+        mCurrentItem = item;
+        mCurrentPosition = position;
+        ImageUtils.launchPicturePicker(this, PICK_IMAGE_CODE);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == PICK_IMAGE_CODE && resultCode == RESULT_OK) {
+            Uri uri = data.getData();
+            String path = uri.toString();
+            mCurrentItem.setImgUrl(path);
+            mAdapter.notifyDataSetChanged();
+            mCurrentItem = null;
+            mCurrentPosition = -1;
+        }
     }
 
 }

@@ -7,9 +7,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import com.android.volley.toolbox.NetworkImageView;
 
 import java.util.List;
 
@@ -17,14 +14,14 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ListViewHolder> {
 
     protected class ListViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        NetworkImageView img_photo;
+        MyImageView img_photo;
         TextView txt_label;
         Button btn_pick;
 
         public ListViewHolder(View itemView) {
             super(itemView);
             txt_label = (TextView) itemView.findViewById(R.id.txt_label);
-            img_photo = (NetworkImageView) itemView.findViewById(R.id.img_photo);
+            img_photo = (MyImageView) itemView.findViewById(R.id.img_photo);
             btn_pick = (Button) itemView.findViewById(R.id.btn_pick);
             btn_pick.setOnClickListener(this);
         }
@@ -32,19 +29,21 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ListViewHolder> {
         @Override
         public void onClick(View v) {
             ListItem item = mItems.get(getAdapterPosition());
-            // do work here
-            Toast.makeText(mContext, item.getLabel(), Toast.LENGTH_SHORT).show();
+            if (mCallback != null) {
+                mCallback.onButtonClick(getAdapterPosition(), item);
+            }
         }
 
     }
 
     private Context mContext;
-
     private List<ListItem> mItems;
+    private Callback mCallback;
 
-    public Adapter(Context context, List<ListItem> items) {
+    public Adapter(Context context, List<ListItem> items, Callback callback) {
         mContext = context;
         mItems = items;
+        mCallback = callback;
     }
 
     @Override
@@ -64,6 +63,12 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ListViewHolder> {
         ListItem item = mItems.get(position);
         holder.txt_label.setText(item.getLabel());
         ImageUtils.setPic(holder.img_photo, item.getImgUrl());
+    }
+
+    public interface Callback {
+
+        void onButtonClick(int position, ListItem item);
+
     }
 
 }

@@ -9,7 +9,7 @@
     android:orientation="horizontal"
     android:padding="8dp">
 
-    <com.android.volley.toolbox.NetworkImageView
+    <com.thetonrifles.stackoverflow.MyImageView
         android:id="@+id/img_photo"
         android:layout_width="60dp"
         android:layout_height="60dp"
