@@ -1,0 +1,6 @@
+<resources>
+
+    <string name="app_name">StackOverflow</string>
+    <string name="btn_pick_image">Pick Image</string>
+
+</resources>
