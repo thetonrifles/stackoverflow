@@ -12,29 +12,15 @@ import com.android.volley.toolbox.Volley;
 public class VolleyHandler {
 
     private static VolleyHandler mInstance;
+    private static Context mContext;
+
     private RequestQueue mRequestQueue;
     private ImageLoader mImageLoader;
-    private static Context mCtx;
 
     private VolleyHandler(Context context) {
-        mCtx = context;
+        mContext = context;
         mRequestQueue = getRequestQueue();
-
-        mImageLoader = new ImageLoader(mRequestQueue,
-                new ImageLoader.ImageCache() {
-                    private final LruCache<String, Bitmap>
-                            cache = new LruCache<String, Bitmap>(20);
-
-                    @Override
-                    public Bitmap getBitmap(String url) {
-                        return cache.get(url);
-                    }
-
-                    @Override
-                    public void putBitmap(String url, Bitmap bitmap) {
-                        cache.put(url, bitmap);
-                    }
-                });
+        mImageLoader = new ImageLoader(mRequestQueue, new BitmapCache());
     }
 
     public static synchronized VolleyHandler getInstance(Context context) {
@@ -48,7 +34,7 @@ public class VolleyHandler {
         if (mRequestQueue == null) {
             // getApplicationContext() is key, it keeps you from leaking the
             // Activity or BroadcastReceiver if someone passes one in.
-            mRequestQueue = Volley.newRequestQueue(mCtx.getApplicationContext());
+            mRequestQueue = Volley.newRequestQueue(mContext.getApplicationContext());
         }
         return mRequestQueue;
     }
@@ -59,6 +45,28 @@ public class VolleyHandler {
 
     public ImageLoader getImageLoader() {
         return mImageLoader;
+    }
+
+    private class BitmapCache implements ImageLoader.ImageCache {
+
+        private LruCache<String, Bitmap> mCache;
+
+        public BitmapCache() {
+            mCache = new LruCache<>(20);
+        }
+
+        @Override
+        public Bitmap getBitmap(String url) {
+            return mCache.get(url);
+        }
+
+        @Override
+        public void putBitmap(String url, Bitmap bitmap) {
+            // scaling bitmap for avoiding too much big images
+            // to be loaded
+            Bitmap scaled = Bitmap.createScaledBitmap(bitmap, 120, 120, false);
+            mCache.put(url, scaled);
+        }
     }
 
 }
