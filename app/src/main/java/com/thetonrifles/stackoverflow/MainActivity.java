@@ -55,7 +55,7 @@ public class MainActivity extends AppCompatActivity implements Adapter.Callback 
     public void onButtonClick(int position, ListItem item) {
         mCurrentItem = item;
         mCurrentPosition = position;
-        ImageUtils.launchPicturePicker(this, PICK_IMAGE_CODE);
+        ImageUtils.getInstance().launchPicturePicker(this, PICK_IMAGE_CODE);
     }
 
     @Override

@@ -64,7 +64,7 @@ public class VolleyHandler {
         public void putBitmap(String url, Bitmap bitmap) {
             // scaling bitmap for avoiding too much big images
             // to be loaded
-            Bitmap scaled = Bitmap.createScaledBitmap(bitmap, 120, 120, false);
+            Bitmap scaled = ImageUtils.getInstance().scaleBitmap(bitmap);
             mCache.put(url, scaled);
         }
     }

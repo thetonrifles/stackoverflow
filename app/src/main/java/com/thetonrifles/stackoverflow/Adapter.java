@@ -62,7 +62,7 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ListViewHolder> {
     public void onBindViewHolder(final ListViewHolder holder, int position) {
         ListItem item = mItems.get(position);
         holder.txt_label.setText(item.getLabel());
-        ImageUtils.setPic(holder.img_photo, item.getImgUrl());
+        ImageUtils.getInstance().setPic(holder.img_photo, item.getImgUrl());
     }
 
     public interface Callback {
