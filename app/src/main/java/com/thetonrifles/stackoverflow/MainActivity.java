@@ -1,11 +1,13 @@
 package com.thetonrifles.stackoverflow;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,7 +57,9 @@ public class MainActivity extends AppCompatActivity implements Adapter.Callback 
     public void onButtonClick(int position, ListItem item) {
         mCurrentItem = item;
         mCurrentPosition = position;
-        ImageUtils.getInstance().launchPicturePicker(this, PICK_IMAGE_CODE);
+        Intent intent = ImageUtils.getInstance().buildPicturePickerIntent(getPackageManager());
+        startActivityForResult(intent, PICK_IMAGE_CODE);
+        //ImageUtils.getInstance().launchPicturePicker(this, PICK_IMAGE_CODE);
     }
 
     @Override
@@ -63,8 +67,21 @@ public class MainActivity extends AppCompatActivity implements Adapter.Callback 
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == PICK_IMAGE_CODE && resultCode == RESULT_OK) {
             Uri uri = data.getData();
-            String path = uri.toString();
-            mCurrentItem.setImgUrl(path);
+            // photo from gallery?
+            if (uri != null) {
+                // yes, photo from gallery
+                String path = uri.toString();
+                mCurrentItem.setImgUrl(path);
+            } else {
+                // TODO need to handle Android 6 Marshmallow permission for storage
+                // no, photo from camera
+                Bitmap photo = (Bitmap) data.getExtras().get("data");
+                Bitmap scaled = ImageUtils.getInstance().scaleBitmap(photo);
+                // store scaled bitmap in filesystem
+                String path = ImageUtils.getInstance().savePhoto(scaled);
+                Log.d("Storage", "stored image at: " + path);
+                mCurrentItem.setImgUrl(path);
+            }
             mAdapter.notifyDataSetChanged();
             mCurrentItem = null;
             mCurrentPosition = -1;
