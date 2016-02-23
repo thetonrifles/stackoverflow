@@ -7,7 +7,9 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 
-public class MainActivity extends AppCompatActivity {
+import com.thetonrifles.stackoverflow.controls.PagerIndicatorView;
+
+public class MainActivity extends AppCompatActivity implements ViewPager.OnPageChangeListener {
 
     private static final String[] URLS = {
             "http://www.thirdyearabroad.com/images/stories/reviews/Cities/rome.jpg",
@@ -15,13 +17,32 @@ public class MainActivity extends AppCompatActivity {
             "https://www.raileurope.com/cms-images/499/398/italy-rome-colosseum.jpg"
     };
 
+    private ViewPager mPager;
+    private PagerIndicatorView mIndicatorView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        ViewPager pager = (ViewPager) findViewById(R.id.pager);
-        pager.setAdapter(new ImagePagerAdapter(getSupportFragmentManager()));
+        mIndicatorView = (PagerIndicatorView) findViewById(R.id.indicator);
+        mPager = (ViewPager) findViewById(R.id.pager);
+        mPager.addOnPageChangeListener(this);
+        mPager.setAdapter(new ImagePagerAdapter(getSupportFragmentManager()));
+        mIndicatorView.setPagesNumber(URLS.length, mPager.getCurrentItem());
+    }
+
+    @Override
+    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+    }
+
+    @Override
+    public void onPageSelected(int position) {
+        mIndicatorView.setPagesNumber(URLS.length, mPager.getCurrentItem());
+    }
+
+    @Override
+    public void onPageScrollStateChanged(int state) {
     }
 
     private class ImagePagerAdapter extends FragmentStatePagerAdapter {

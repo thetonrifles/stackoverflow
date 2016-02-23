@@ -6,13 +6,13 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
-import com.thetonrifles.stackoverflow.volley.ImageUtils;
-import com.thetonrifles.stackoverflow.volley.MyImageView;
+import com.squareup.picasso.Picasso;
 
 public class ImageFragment extends Fragment {
 
-    private MyImageView mImageView;
+    private ImageView mImageView;
 
     public static ImageFragment newInstance(String url) {
         ImageFragment fragment = new ImageFragment();
@@ -26,7 +26,7 @@ public class ImageFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View layout = inflater.inflate(R.layout.fragment_image, container, false);
-        mImageView = (MyImageView) layout.findViewById(R.id.img_photo);
+        mImageView = (ImageView) layout.findViewById(R.id.img_photo);
         return layout;
     }
 
@@ -34,7 +34,7 @@ public class ImageFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         String url = getArguments().getString("image_url");
-        ImageUtils.getInstance().setPic(mImageView, url);
+        Picasso.with(getActivity()).load(url).into(mImageView);
     }
 
 }

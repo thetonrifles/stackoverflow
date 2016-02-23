@@ -2,7 +2,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.thetonrifles.stackoverflow.volley.MyImageView
+    <ImageView
         android:id="@+id/img_photo"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
