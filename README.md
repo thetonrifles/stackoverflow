@@ -1,3 +1,3 @@
 # stackoverflow
 
-Question [35582151](http://stackoverflow.com/questions/35582151/image-page-scroll-transtion)
+Question [35627257](http://stackoverflow.com/questions/35627257/connect-to-a-specific-bluetooth-paired-device)
