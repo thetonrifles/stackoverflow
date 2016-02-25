@@ -49,6 +49,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Blueto
             super(itemView);
             txt_label = (TextView) itemView.findViewById(android.R.id.text1);
             txt_mac = (TextView) itemView.findViewById(android.R.id.text2);
+            itemView.setOnClickListener(this);
         }
 
         @Override

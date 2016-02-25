@@ -57,7 +57,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerAdapter.C
 
     @Override
     public void onDeviceClick(BluetoothDevice device) {
-        // TODO connect
+        (new ConnectThread(device)).start();
     }
 
     @Override
