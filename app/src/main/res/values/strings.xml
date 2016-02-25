@@ -1,4 +1,6 @@
 <resources>
     <string name="app_name">Stackoverflow</string>
     <string name="toast_bt_unavailable">Bluetooth unavailable</string>
+    <string name="toast_bt_connected">bluetooth connected</string>
+    <string name="toast_bt_failed_connection">failed to connect</string>
 </resources>

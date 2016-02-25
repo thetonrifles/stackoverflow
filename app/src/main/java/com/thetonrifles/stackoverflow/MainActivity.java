@@ -1,5 +1,6 @@
 package com.thetonrifles.stackoverflow;
 
+import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
@@ -12,13 +13,14 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements RecyclerAdapter.Callback {
+public class MainActivity extends AppCompatActivity implements RecyclerAdapter.Callback, ConnectThread.Callback {
 
     private static final int BT_ENABLE_REQUEST_CODE = 1000;
 
     private RecyclerAdapter mAdapter;
     private BluetoothAdapter mBtAdapter;
     private List<BluetoothDevice> mDevices;
+    private ProgressDialog mLoader;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,7 +59,10 @@ public class MainActivity extends AppCompatActivity implements RecyclerAdapter.C
 
     @Override
     public void onDeviceClick(BluetoothDevice device) {
-        (new ConnectThread(device)).start();
+        mLoader = new ProgressDialog(this);
+        mLoader.setMessage("loading...");
+        mLoader.show();
+        (new ConnectThread(device, this)).start();
     }
 
     @Override
@@ -66,6 +71,18 @@ public class MainActivity extends AppCompatActivity implements RecyclerAdapter.C
         if (requestCode == BT_ENABLE_REQUEST_CODE  && resultCode == RESULT_OK) {
             updateDevices();
         }
+    }
+
+    @Override
+    public void onConnected() {
+        mLoader.dismiss();
+        Toast.makeText(this, R.string.toast_bt_connected, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onFailure() {
+        mLoader.dismiss();
+        Toast.makeText(this, R.string.toast_bt_failed_connection, Toast.LENGTH_SHORT).show();
     }
 
 }

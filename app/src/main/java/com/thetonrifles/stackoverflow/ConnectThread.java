@@ -1,8 +1,9 @@
 package com.thetonrifles.stackoverflow;
 
-import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
+import android.os.Handler;
+import android.os.Looper;
 import android.os.ParcelUuid;
 import android.util.Log;
 
@@ -10,47 +11,55 @@ import java.io.IOException;
 
 public class ConnectThread extends Thread {
 
-    private final BluetoothSocket mSocket;
-    private final BluetoothDevice mDevice;
- 
-    public ConnectThread(BluetoothDevice device) {
-        BluetoothSocket tmp = null;
-        mDevice = device;
- 
-        try {
-            ParcelUuid uuid = mDevice.getUuids()[0];
+    private static final String LOG_TAG = "BT";
 
-            if(uuid ==  null) {
-                Log.e("BT", "UUID = null");
-            } else {
-                Log.d("BT", "UUID = " + uuid.toString());
-                tmp = device.createRfcommSocketToServiceRecord(uuid.getUuid());
-            }
-        } catch (IOException ignored) {
-        }
-        mSocket = tmp;
+    private BluetoothSocket mSocket;
+    private BluetoothDevice mDevice;
+    private Callback mCallback;
+
+    public ConnectThread(BluetoothDevice device, Callback callback) {
+        mDevice = device;
+        mCallback = callback;
     }
 
     @Override
     public void run() {
-        // Cancel discovery because it will slow down the connection
-        BluetoothAdapter bt = BluetoothAdapter.getDefaultAdapter();
-        bt.cancelDiscovery();
- 
-        try {
-            // Connect the device through the socket. This will block
-            // until it succeeds or throws an exception
-            mSocket.connect();
-        } catch (IOException connectException) {
-            // Unable to connect; close the socket and get out
+        Log.d(LOG_TAG, "got " + mDevice.getUuids().length + " uuids");
+        for (ParcelUuid uuid : mDevice.getUuids()) {
+            Log.d(LOG_TAG, "got uuid: " + uuid.toString());
             try {
-                mSocket.close();
-            } catch (IOException closeException) { }
-            return;
+                mSocket = mDevice.createRfcommSocketToServiceRecord(uuid.getUuid());
+                mSocket.connect();
+                Log.d(LOG_TAG, "connected");
+                break;
+            } catch (Exception ex1) {
+                Log.e(LOG_TAG, ex1.getMessage());
+                mSocket = null;
+                try {
+                    Log.d(LOG_TAG, "trying fallback");
+                    mSocket = (BluetoothSocket) mDevice.getClass()
+                            .getMethod("createRfcommSocket", new Class[]{int.class}).invoke(mDevice, 1);
+                    mSocket.connect();
+                    Log.d(LOG_TAG, "connected");
+                    break;
+                } catch (Exception ex2) {
+                    Log.e(LOG_TAG, ex2.getMessage());
+                    cancel();
+                }
+            }
         }
- 
-        // Do work to manage the connection (in a separate thread)
-        Log.i("BT", "manage connected socket");
+        if (mCallback != null) {
+            new Handler(Looper.getMainLooper()).post(new Runnable() {
+                @Override
+                public void run() {
+                    if (mSocket != null && mSocket.isConnected()) {
+                        mCallback.onConnected();
+                    } else {
+                        mCallback.onFailure();
+                    }
+                }
+            });
+        }
     }
 
     public void cancel() {
@@ -58,6 +67,14 @@ public class ConnectThread extends Thread {
             mSocket.close();
         } catch (IOException ignored) {
         }
+    }
+
+    public interface Callback {
+
+        void onConnected();
+
+        void onFailure();
+
     }
 
 }
